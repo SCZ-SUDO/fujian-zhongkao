@@ -1,0 +1,1616 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>福建中考 · 折分 / 总评 / 志愿助手</title>
+<style>
+  :root{
+    --ink:#14202e; --ink2:#4a5a6d; --ink3:#8494a6;
+    --line:#dfe5ec; --line2:#eef2f7;
+    --bg:#f2f5f9; --card:#ffffff;
+    --brand:#0f3d6e; --brand2:#1a6fb5;
+    --ok:#1c7c54; --warn:#b26a00; --risk:#c0392b;
+    --r:14px;
+    --sh:0 1px 2px rgba(16,32,48,.06),0 8px 24px -12px rgba(16,32,48,.18);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{
+    margin:0; background:var(--bg); color:var(--ink); overflow-x:hidden;
+    font:15px/1.6 -apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+    padding:0 0 48px; -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:880px;margin:0 auto;padding:0 16px}
+  header{
+    background:linear-gradient(160deg,#0f3d6e 0%,#15538f 55%,#1a6fb5 100%);
+    color:#fff;padding:26px 0 22px;position:relative;overflow:hidden;
+  }
+  header:after{content:"";position:absolute;right:-60px;top:-70px;width:230px;height:230px;
+    border-radius:50%;background:rgba(255,255,255,.07)}
+  header:before{content:"";position:absolute;right:60px;bottom:-90px;width:150px;height:150px;
+    border-radius:50%;background:rgba(255,255,255,.05)}
+  h1{margin:0;font-size:21px;font-weight:700;letter-spacing:.3px;position:relative}
+  .sub{margin-top:6px;font-size:12.5px;color:rgba(255,255,255,.78);position:relative}
+  .sub b{font-weight:600;color:#fff}
+
+  section{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);
+    margin-top:14px;padding:18px 18px 16px;border:1px solid rgba(20,32,46,.045)}
+  .h{display:flex;align-items:center;gap:9px;margin-bottom:14px}
+  .h .n{width:22px;height:22px;border-radius:7px;background:var(--brand);color:#fff;
+    font-size:12px;font-weight:700;display:grid;place-items:center;flex:none}
+  .h .t{font-size:15px;font-weight:650;letter-spacing:.2px}
+  .h .tip{margin-left:auto;font-size:11.5px;color:var(--ink3)}
+
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+  .grid4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px}
+  @media(max-width:860px){.grid4{grid-template-columns:1fr 1fr}}
+  @media(max-width:640px){.grid3{grid-template-columns:1fr 1fr}}
+  @media(max-width:520px){.grid2,.grid3{grid-template-columns:1fr}}
+  label.f{display:block}
+  label.f span{display:block;font-size:12px;color:var(--ink2);margin-bottom:5px}
+  label.f span i{font-style:normal;color:var(--ink3);font-size:11px}
+  input,select,textarea{min-width:0;max-width:100%}
+  input[type=number],input[type=text],select{
+    width:100%;height:44px;border:1px solid var(--line);border-radius:10px;
+    background:#fbfcfe;color:var(--ink);font-size:16px;padding:0 12px;
+    font-variant-numeric:tabular-nums;appearance:none;font-family:inherit;
+  }
+  select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%234a5a6d' stroke-width='1.6' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat:no-repeat;background-position:right 13px center;padding-right:34px}
+  input:focus,select:focus{outline:none;border-color:var(--brand2);background:#fff;box-shadow:0 0 0 3px rgba(26,111,181,.12)}
+  input:disabled{background:#f0f3f7;color:var(--ink3);cursor:not-allowed}
+
+  .subj{display:grid;grid-template-columns:88px minmax(0,1fr) 92px;gap:10px;align-items:center;padding:7px 0}
+  .subj .nm{font-size:13.5px;color:var(--ink);white-space:nowrap}
+  .subj .nm em{font-style:normal;font-size:11px;color:var(--ink3);margin-left:4px}
+  .subj .out{font-size:13px;text-align:right;white-space:nowrap;color:var(--ink2);font-variant-numeric:tabular-nums}
+  .subj .out b{color:var(--brand);font-weight:650;font-size:14px}
+  .subj.locked .nm{color:var(--ink3)}
+  .divider{height:1px;background:var(--line2);margin:6px 0}
+  .mini-h{font-size:12px;color:var(--ink3);margin:14px 0 2px;letter-spacing:.4px}
+
+  .seg{display:inline-flex;background:#eef2f7;border-radius:9px;padding:3px;gap:2px;flex-wrap:wrap}
+  .seg button{border:0;background:transparent;color:var(--ink2);font-size:12.5px;
+    padding:5px 12px;border-radius:7px;cursor:pointer;font-family:inherit}
+  .seg button.on{background:#fff;color:var(--brand);font-weight:600;box-shadow:0 1px 2px rgba(16,32,48,.12)}
+
+  .badge{display:inline-block;font-size:10.5px;padding:1px 7px;border-radius:20px;
+    background:#eef2f7;color:var(--ink2);margin-left:6px;font-weight:500;vertical-align:1px}
+  .badge.lock{background:#fdf3e3;color:var(--warn)}
+  .link{color:var(--brand2);font-size:11.5px;cursor:pointer;margin-left:6px;text-decoration:underline}
+
+  .total{display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap;
+    background:linear-gradient(135deg,#0f3d6e,#1a6fb5);color:#fff;
+    border-radius:var(--r);padding:20px 20px 18px;margin-top:14px;box-shadow:var(--sh)}
+  .total .big{font-size:52px;font-weight:750;line-height:1;letter-spacing:-1.5px;font-variant-numeric:tabular-nums}
+  .total .unit{font-size:14px;opacity:.8;margin-bottom:7px}
+  .total .meta{margin-left:auto;text-align:right;font-size:12.5px;color:rgba(255,255,255,.8);line-height:1.7}
+  .total .meta b{color:#fff;font-weight:600;font-variant-numeric:tabular-nums}
+
+  .bars{margin-top:14px}
+  .bar{display:grid;grid-template-columns:62px minmax(0,1fr) 46px;gap:9px;align-items:center;margin:6px 0;font-size:12px}
+  .bar .bn{color:var(--ink2)}
+  .bar .bt{height:7px;background:var(--line2);border-radius:4px;overflow:hidden}
+  .bar .bf{height:100%;border-radius:4px;background:linear-gradient(90deg,#1a6fb5,#4d9bd8);transition:width .35s}
+  .bar .bv{text-align:right;color:var(--ink3);font-variant-numeric:tabular-nums}
+
+  .gates{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+  .gate{border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-size:12.5px;
+    background:#fbfcfe;color:var(--ink2);display:flex;align-items:center;gap:8px}
+  .gate b{color:var(--ink);font-size:14px;font-variant-numeric:tabular-nums}
+  .gate.hit{border-color:#b9dcc9;background:#f2faf6}
+  .gate.miss{opacity:.55}
+  .pill{display:inline-block;font-size:11px;padding:1px 7px;border-radius:20px;font-weight:600}
+  .pill.ok{background:#e7f6ee;color:var(--ok)}
+  .pill.mid{background:#fdf3e3;color:var(--warn)}
+  .pill.bad{background:#fdeceb;color:var(--risk)}
+
+  .note{font-size:12px;color:var(--ink2);background:#f7fafd;border:1px solid var(--line2);
+    border-left:3px solid #b9cde0;border-radius:8px;padding:9px 12px;margin-top:12px;line-height:1.65}
+  .note b{color:var(--ink)}
+  .note.warn{background:#fffbf2;border-left-color:#e8b96a}
+
+  /* 体育 */
+  .peCat{margin-top:14px}
+  .peCat:first-of-type{margin-top:0}
+  .peHead{display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap}
+  .peHead .pn{font-size:13px;font-weight:650;color:var(--ink)}
+  .peHead .pw{font-size:11.5px;color:var(--ink3)}
+  .peRow{display:grid;grid-template-columns:minmax(0,1fr) 118px 100px;gap:10px;align-items:center;
+    padding:8px 0;border-top:1px solid var(--line2)}
+  .peRow .pnm{font-size:13px;color:var(--ink)}
+  .peRow .pnm small{display:block;font-size:11px;color:var(--ink3);font-weight:400}
+  .peRow .psc{font-size:12px;text-align:right;color:var(--ink3);font-variant-numeric:tabular-nums;white-space:nowrap}
+  .peRow .psc b{color:var(--brand);font-size:14px}
+  .pePool{font-size:11.5px;color:var(--ink3);margin:-2px 0 9px;line-height:1.5}
+  .pePool b{color:var(--ink2);font-weight:600}
+  .peSum{display:flex;align-items:baseline;gap:10px;justify-content:flex-end;margin-top:12px;
+    padding-top:12px;border-top:1px solid var(--line2);font-size:13px;color:var(--ink2)}
+  .peSum b{font-size:24px;color:var(--brand);font-variant-numeric:tabular-nums}
+
+  /* 总评 */
+  .rv{font-size:14px;line-height:1.9;color:var(--ink)}
+  .rv p{margin:0 0 10px}
+  .rv p:last-child{margin-bottom:0}
+  .rv b{color:var(--brand);font-weight:650}
+  .rv .concl{margin-top:12px;padding:11px 13px;border-radius:10px;background:#eef6fd;
+    border-left:3px solid var(--brand2);font-weight:600;color:#12467a}
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-bottom:14px}
+  @media(max-width:620px){.kpis{grid-template-columns:1fr 1fr}}
+  .kpi{border:1px solid var(--line);border-radius:11px;padding:10px 12px;background:#fbfcfe}
+  .kpi .kt{font-size:11.5px;color:var(--ink3);margin-bottom:3px}
+  .kpi .kv{font-size:17px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--ink)}
+  .kpi .kv small{font-size:11px;font-weight:500;color:var(--ink3);margin-left:3px}
+
+  /* 计划 */
+  .planItem{display:flex;gap:12px;padding:14px 0;border-top:1px solid var(--line2)}
+  .planItem:first-child{border-top:0;padding-top:2px}
+  .planItem .pi-no{width:26px;height:26px;border-radius:8px;background:var(--brand);color:#fff;
+    font-size:12px;font-weight:700;display:grid;place-items:center;flex:none;margin-top:2px}
+  .planItem .pi-b{flex:1;min-width:0}
+  .planItem h4{margin:0 0 4px;font-size:14px;font-weight:650;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+  .planItem h4 .room{font-size:12px;color:var(--risk);font-weight:600}
+  .planItem .why{font-size:12px;color:var(--ink3);margin-bottom:6px}
+  .planItem ul{margin:0;padding-left:18px;font-size:13px;color:var(--ink2);line-height:1.8}
+  .planItem li{margin-bottom:2px}
+  .goal{margin-top:14px;padding:12px 14px;border-radius:11px;
+    background:linear-gradient(135deg,#eef6fd,#f7fbff);border:1px solid #cfe3f4;font-size:13.5px;line-height:1.7}
+  .goal b{color:var(--brand);font-size:17px;font-variant-numeric:tabular-nums}
+
+  .diffrow{display:flex;align-items:center;gap:12px;margin-top:12px;padding-top:12px;border-top:1px dashed var(--line)}
+  .diffrow .lb{font-size:12.5px;color:var(--ink2);white-space:nowrap}
+  .diffrow .dl{font-size:11.5px;color:var(--ink3);white-space:nowrap}
+  .diffrow input[type=range]{flex:1;min-width:120px;accent-color:var(--brand2)}
+  .diffrow .dv{font-size:13px;font-weight:650;color:var(--brand);min-width:58px;text-align:right;font-variant-numeric:tabular-nums}
+  .mini{width:84px !important;height:34px !important;font-size:13px !important;display:inline-block}
+  .calcbox{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:#fbfcfe;margin-bottom:14px}
+  .cbrow{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .cbrow + .cbrow{margin-top:10px;padding-top:10px;border-top:1px solid var(--line2)}
+  .cbrow .lb{font-size:12.5px;color:var(--ink2)}
+  .cbrow b{font-size:17px;color:var(--brand);font-variant-numeric:tabular-nums}
+  .cbrow .arrow{color:var(--ink3);font-size:13px}
+  .cbnote{font-size:11.5px;color:var(--ink3);margin-left:auto;text-align:right;line-height:1.5}
+  .chk{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--ink);cursor:pointer;user-select:none}
+  .chk input{width:16px;height:16px;accent-color:var(--brand)}
+  .adv{margin-top:10px;border-top:1px dashed var(--line);padding-top:8px}
+  .adv summary{font-size:12px;color:var(--ink3);cursor:pointer;list-style:none}
+  .adv summary::-webkit-details-marker{display:none}
+  .adv summary:before{content:"▸ ";color:var(--ink3)}
+  .adv[open] summary:before{content:"▾ "}
+  .advrow{display:grid;grid-template-columns:150px 1fr 74px;gap:10px;align-items:center;margin-top:9px;font-size:12px;color:var(--ink2)}
+  .advrow input[type=range]{accent-color:var(--brand2)}
+  .advrow .av{text-align:right;font-variant-numeric:tabular-nums;color:var(--ink);font-weight:600}
+  .dxtag{display:inline-block;flex:none;font-size:10px;padding:0 5px;border-radius:4px;background:#eef6fd;color:#12467a;margin-left:5px;font-weight:600;vertical-align:1px}
+  .tune{display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap}
+  .tune input[type=range]{flex:1;min-width:160px;accent-color:var(--brand2)}
+  .tune .tv{font-variant-numeric:tabular-nums;font-size:13px;color:var(--ink2);min-width:112px;text-align:right}
+  .chips{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+  @media(max-width:640px){.chips{grid-template-columns:1fr}}
+  .col{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#fff}
+  .col > .ct{padding:9px 12px;font-size:12.5px;font-weight:650;letter-spacing:.3px;display:flex;align-items:center;gap:6px}
+  .col.c1 > .ct{background:#fdeceb;color:#a5342a}
+  .col.c2 > .ct{background:#fdf3e3;color:#8a5300}
+  .col.c3 > .ct{background:#e9f6f0;color:#146b49}
+  .col .ct .cnt{margin-left:auto;font-weight:500;opacity:.7;font-size:11.5px}
+  .opt{padding:9px 12px;border-top:1px solid var(--line2);cursor:pointer;display:flex;align-items:baseline;gap:7px}
+  .opt:hover{background:#f7fafd}
+  .opt.on{background:#eef6fd;box-shadow:inset 3px 0 0 var(--brand2)}
+  .opt .onm{font-size:13px;color:var(--ink);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .opt .ol{font-size:11.5px;color:var(--ink3);font-variant-numeric:tabular-nums;flex:none}
+  .opt .od{font-size:11.5px;font-variant-numeric:tabular-nums;flex:none;font-weight:600}
+  .empty{padding:16px 12px;color:var(--ink3);font-size:12px;border-top:1px solid var(--line2);line-height:1.6}
+
+  .lib{margin-top:14px;border:1px solid var(--line);border-radius:12px;background:#fff;overflow:hidden}
+  .lib summary{padding:11px 13px;font-size:13px;color:var(--ink2);cursor:pointer;list-style:none;display:flex;align-items:center;gap:6px}
+  .lib summary::-webkit-details-marker{display:none}
+  .lib summary:before{content:"▸";color:var(--ink3);font-size:11px;transition:transform .15s}
+  .lib[open] summary:before{transform:rotate(90deg)}
+  .lib summary span{margin-left:auto;font-size:11.5px;color:var(--ink3)}
+  .lib-in{padding:0 13px 13px;border-top:1px solid var(--line2)}
+  .lib-in input[type=search]{width:100%;height:38px;border:1px solid var(--line);border-radius:9px;
+    background:#fbfcfe;font-size:13.5px;padding:0 11px;margin:11px 0 8px;font-family:inherit;color:var(--ink)}
+  .lib-in input[type=search]:focus{outline:none;border-color:var(--brand2);background:#fff}
+  .lib-list{max-height:340px;overflow:auto;margin:0 -5px}
+  .lrow{display:grid;grid-template-columns:1fr 62px 58px;gap:8px;padding:7px 5px;font-size:13px;
+    border-bottom:1px solid var(--line2);cursor:pointer;align-items:center}
+  .lrow:hover{background:#f7fafd}
+  .lrow .ln{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .lrow .ll{text-align:right;font-size:12px;color:var(--ink3);font-variant-numeric:tabular-nums}
+  .lrow .ld{text-align:right;font-size:12px;font-weight:600;font-variant-numeric:tabular-nums}
+  .lib-empty{padding:14px 4px;color:var(--ink3);font-size:12.5px}
+
+  .sheet{margin-top:16px;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  .sheet .sh{background:#f7fafd;padding:9px 13px;font-size:12.5px;font-weight:650;color:var(--ink2);display:flex}
+  .sheet .sh span{margin-left:auto;font-weight:400;color:var(--ink3);font-size:11.5px}
+  .row3{display:grid;grid-template-columns:28px minmax(0,1fr) 88px 68px;gap:8px;align-items:center;
+    padding:10px 13px;border-top:1px solid var(--line2);font-size:13px}
+  .row3 .no{width:22px;height:22px;border-radius:50%;background:var(--brand);color:#fff;font-size:11.5px;
+    display:grid;place-items:center;font-weight:700}
+  .row3 .sl{color:var(--ink3);font-size:11.5px;text-align:right;font-variant-numeric:tabular-nums}
+  .row3 .st{font-size:11.5px;text-align:right}
+  .row3.blank .sn{color:var(--ink3)}
+  .row3.blank .no{background:#cfd8e3}
+
+  .btns{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}
+  button.btn{font-family:inherit;font-size:13px;height:40px;padding:0 16px;border-radius:10px;
+    border:1px solid var(--line);background:#fff;color:var(--ink);cursor:pointer;
+    display:inline-flex;align-items:center;gap:7px}
+  button.btn:hover{border-color:#c3d1e0;background:#fbfcfe}
+  button.btn.pri{background:var(--brand);border-color:var(--brand);color:#fff;font-weight:600}
+  button.btn.pri:hover{background:#0c3358}
+  button.btn.ghost{color:var(--ink2)}
+
+  .modal{position:fixed;inset:0;background:rgba(12,22,34,.5);display:none;place-items:center;padding:18px;z-index:50}
+  .modal.on{display:grid}
+  .mbox{background:#fff;border-radius:16px;max-width:420px;width:100%;padding:20px;box-shadow:0 24px 60px -20px rgba(0,0,0,.5)}
+  .mbox h3{margin:0 0 12px;font-size:16px}
+  .mbox .frow{margin-bottom:10px}
+  .mbox .frow span{font-size:12px;color:var(--ink2);display:block;margin-bottom:4px}
+  .mbox .btns{margin-top:16px;justify-content:flex-end}
+  footer{text-align:center;font-size:11.5px;color:var(--ink3);margin-top:22px;line-height:1.8}
+
+  @media(max-width:430px){
+    .wrap{padding:0 12px}
+    section{padding:16px 14px 14px}
+    .subj{grid-template-columns:76px minmax(0,1fr) 80px;gap:8px}
+    .total{padding:16px 16px 14px}
+    .total .big{font-size:44px}
+    .peRow{grid-template-columns:minmax(0,1fr) 96px 84px;gap:8px}
+  }
+  /* ---------- 成绩单（打印用） ---------- */
+  .report{display:none}
+  @page{size:A4;margin:13mm 12mm}
+  @media print{
+    html,body{background:#fff !important;padding:0;margin:0}
+    body > *:not(#reportSheet){display:none !important}
+    #reportSheet{display:block !important;color:#000;font-size:11.5pt;line-height:1.5}
+    .report *{box-sizing:border-box}
+  }
+  #reportSheet{
+    font-family:-apple-system,"PingFang SC","Songti SC",serif;color:#000;
+    font-size:9.5pt;line-height:1.42;
+  }
+  #reportSheet .rt{text-align:center;border-bottom:2px solid #000;padding-bottom:5px;margin-bottom:8px}
+  #reportSheet .rt h1{margin:0;font-size:16pt;letter-spacing:1.5px;font-weight:700}
+  #reportSheet .rt .rs{margin-top:3px;font-size:8.5pt;color:#333}
+  #reportSheet .meta{display:flex;flex-wrap:wrap;gap:3px 18px;font-size:9pt;margin-bottom:7px}
+  #reportSheet .meta b{font-weight:600}
+  #reportSheet .meta .fill{display:inline-block;min-width:80px;border-bottom:1px solid #666}
+  #reportSheet h2{font-size:10.5pt;margin:9px 0 4px;padding-left:6px;border-left:3px solid #000;font-weight:700}
+  #reportSheet table{width:100%;border-collapse:collapse;font-size:9.5pt}
+  #reportSheet th,#reportSheet td{border:1px solid #666;padding:2.5px 5px;text-align:center;line-height:1.3}
+  #reportSheet th{background:#eee;font-weight:600}
+  #reportSheet td.l{text-align:left}
+  #reportSheet tr.sum td{background:#f4f4f4;font-weight:700}
+  #reportSheet .big{font-size:12.5pt;font-weight:700}
+  #reportSheet .kvs{display:flex;flex-wrap:wrap;gap:8px 20px;font-size:10.5pt;margin-top:6px}
+  #reportSheet .kvs b{font-weight:700}
+  #reportSheet .foot{margin-top:8px;padding-top:6px;border-top:1px solid #999;font-size:7.5pt;color:#444;line-height:1.5}
+  #reportSheet .sign{display:flex;justify-content:space-between;margin-top:10px;font-size:9pt}
+  #reportSheet .sign span{border-bottom:1px solid #666;min-width:150px;display:inline-block}
+  @media print{ #reportSheet .nb{page-break-inside:avoid} }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <h1>福建中考 · 折分 / 总评 / 志愿助手</h1>
+    <div class="sub">2026 年福建省规则 ｜ 总分 <b>800</b> ｜ 体育 <b>40</b>（按成绩自动算分）</div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <!-- 1 场景 -->
+  <section>
+    <div class="h"><span class="n">1</span><span class="t">这次是什么考试</span>
+      <span class="tip" id="sceneTip"></span></div>
+    <div class="grid3">
+      <label class="f"><span>考试类型</span>
+        <select id="scene">
+          <option value="daily">平时测验 / 单元考</option>
+          <option value="mid">期中 · 期末</option>
+          <option value="mock">一模/二模</option>
+          <option value="zk">正式中考</option>
+        </select>
+      </label>
+      <label class="f"><span>年级</span>
+        <select id="grade">
+          <option value="9">九年级</option>
+          <option value="8">八年级</option>
+          <option value="7">七年级</option>
+        </select>
+      </label>
+      <label class="f"><span>性别</span>
+        <select id="gender">
+          <option value="m">男</option>
+          <option value="f">女</option>
+        </select>
+      </label>
+    </div>
+    <div class="diffrow">
+      <span class="lb">这次卷子难度</span>
+      <span class="dl">偏易</span>
+      <input type="range" id="diff" min="-15" max="15" step="1" value="0">
+      <span class="dl">偏难</span>
+      <span class="dv" id="diffV">0 分</span>
+    </div>
+    <div class="note" id="sceneNote"></div>
+  </section>
+
+  <!-- 2 地区 -->
+  <section>
+    <div class="h"><span class="n">2</span><span class="t">你参加中考的地区</span>
+      <span class="tip" id="ruleTip"></span></div>
+    <div class="grid2">
+      <label class="f"><span>设区市</span><select id="city"></select></label>
+      <label class="f"><span>招生区域 / 县（市、区）</span><select id="area"></select></label>
+    </div>
+    <div class="gates" id="gates"></div>
+  </section>
+
+  <!-- 3 成绩 -->
+  <section>
+    <div class="h"><span class="n">3</span><span class="t">输入卷面成绩</span>
+      <span class="tip">填原始分，右侧自动折算</span></div>
+    <div id="subjBox"></div>
+    <div class="note" id="geoNote"></div>
+  </section>
+
+  <!-- 4 体育 -->
+  <section>
+    <div class="h"><span class="n">4</span><span class="t">体育与健康 · 40 分</span>
+      <span class="tip">填实测成绩，自动算分</span></div>
+    <div id="peBox"></div>
+    <div class="peSum">体育合计 <b id="peTotal">0</b> 分 <span id="peHint" style="font-size:12px;color:var(--ink3)"></span></div>
+    <div class="note">
+      分项按《福建省初中毕业升学体育与健康考试评分标准》查表：项目先得百分制分，再按 15% / 9% / 8% 折算，
+      单项四舍五入取整后相加。时间项成绩越好（越小）得分越高。
+    </div>
+  </section>
+
+  <!-- 总分 -->
+  <div class="total">
+    <div class="big" id="bigTotal">0.0</div>
+    <div class="unit">/ 800 分</div>
+    <div class="meta">
+      <div>文化课 <b id="mCulture">0.0</b> ｜ 体育 <b id="mPE">0</b></div>
+      <div id="mRank">填完成绩后显示所处位置</div>
+    </div>
+  </div>
+
+  <section>
+    <div class="h"><span class="n">5</span><span class="t">折算明细</span><span class="tip">满分 800</span></div>
+    <div class="bars" id="bars"></div>
+  </section>
+
+  <!-- 总评 -->
+  <section>
+    <div class="h"><span class="n">6</span><span class="t">总评</span>
+      <span class="tip" id="rvTip"></span></div>
+    <div class="kpis" id="kpis"></div>
+    <div class="rv" id="review"></div>
+  </section>
+
+  <!-- 计划 -->
+  <section id="secPlan">
+    <div class="h"><span class="n">7</span><span class="t">提升计划</span>
+      <span class="tip" id="planTip"></span></div>
+    <div id="plan"></div>
+  </section>
+
+  <!-- 志愿 -->
+  <section id="secVol">
+    <div class="h"><span class="n">8</span><span class="t">1 / 2 / 3 志愿建议</span>
+      <span class="tip" id="libTip"></span></div>
+    <div class="calcbox">
+      <div class="cbrow">
+        <span class="lb">本次折算</span><b id="rawScore">0</b>
+        <span class="arrow">→</span>
+        <span class="lb">中考等效分</span><b id="eqScore">0</b>
+        <span class="cbnote" id="eqNote"></span>
+      </div>
+      <div class="cbrow">
+        <span class="lb">分数线口径</span>
+        <div class="seg" id="baseSeg">
+          <button data-v="2026" class="on">2026 实际线</button>
+          <button data-v="2027">2027 预测线</button>
+        </div>
+        <label class="chk"><input type="checkbox" id="dxOn"> 我有定向生资格</label>
+      </div>
+      <div class="cbrow" id="schoolRow" style="display:none">
+        <span class="lb">校内排名</span>
+        <input type="number" id="myRank" class="mini" placeholder="名次" min="1">
+        <span class="lb">/</span>
+        <input type="number" id="gradeN" class="mini" placeholder="年级人数" min="1">
+        <span class="lb">目标校定向名额</span>
+        <input type="number" id="dxQuota" class="mini" placeholder="个" min="1">
+        <span class="cbnote" id="schoolNote"></span>
+      </div>
+      <details class="adv" id="advBox">
+        <summary>预测参数 / 定向降分（都能自己调）</summary>
+        <div class="advrow"><span>年际漂移（每年自然上涨）</span>
+          <input type="range" id="driftY" min="-5" max="15" step="0.5" value="4"><span class="av" id="driftYv">+4</span></div>
+        <div class="advrow"><span>新教材首年加成</span>
+          <input type="range" id="driftB" min="-5" max="20" step="0.5" value="6"><span class="av" id="driftBv">+6</span></div>
+        <div class="advrow"><span>定向降分（0–45）</span>
+          <input type="range" id="dxDrop" min="0" max="45" step="1" value="20"><span class="av" id="dxDropv">−20</span></div>
+        <div class="note" style="margin-top:10px">
+          <b>预测线 = 2026 线 + 年际漂移 + 新教材加成。</b>
+          2027 届是首届全程用 2024 版新教材的考生，首年命题通常求稳、区分度下降，同一位次对应的分数会往上走。
+          默认 +4 / +6 是保守估计，你可以按自己的判断拉。<br>
+          <b>定向降分</b>：福州规则是定向生录取在统招线以下 45 分以内，以初中校为单位按校内排名取，实际落在 0–45 之间的某个点。
+        </div>
+      </details>
+    </div>
+    <div class="chips">
+      <div class="col c1"><div class="ct">第一志愿 · 冲<span class="cnt" id="c1n"></span></div><div id="c1"></div></div>
+      <div class="col c2"><div class="ct">第二志愿 · 稳<span class="cnt" id="c2n"></span></div><div id="c2"></div></div>
+      <div class="col c3"><div class="ct">第三志愿 · 保<span class="cnt" id="c3n"></span></div><div id="c3"></div></div>
+    </div>
+    <details class="lib" id="libBox">
+      <summary>查看本区全部学校 <span id="libCount"></span></summary>
+      <div class="lib-in">
+        <input type="search" id="libSearch" placeholder="搜学校名，例如：一中 / 实验 / 侨中">
+        <div class="lib-list" id="libList"></div>
+      </div>
+    </details>
+    <div class="sheet" id="secSheet">
+      <div class="sh">我的志愿表<span id="sheetHint">点上面的学校加入</span></div>
+      <div id="sheetRows"></div>
+    </div>
+    <div class="btns">
+      <button class="btn pri" id="btnCopy" type="button">复制志愿表</button>
+      <button class="btn" id="btnCopyRV" type="button">复制总评</button>
+      <button class="btn" id="btnPrint" type="button">打印成绩单</button>
+      <button class="btn" id="btnAdd" type="button">＋ 添加我的学校</button>
+      <button class="btn ghost" id="btnReset" type="button">清空重填</button>
+    </div>
+    <div style="font-size:11.5px;color:var(--ink3);margin-top:8px;line-height:1.6">
+      「打印成绩单」生成的是 A4 单页：文化课折算表、体育明细、总分与排名、批次线、志愿建议，可直接打印或存 PDF。
+      若纸面上带出网址和日期，在打印对话框里把「页眉和页脚」取消勾选就行。
+    </div>
+    <div class="note warn" id="ruleNote"></div>
+  </section>
+
+  <footer>
+    折分规则依据：闽教基〔2018〕66 号及 2026 年各设区市中招文件。<br>
+    体育评分标准依据：闽教体〔2020〕18 号（福建省初中毕业升学体育与健康考试实施方案）。<br>
+    录取线为 2026 年真实数据，仅供参考，以当年官方公布为准。
+  </footer>
+</div>
+
+<div id="reportSheet"></div>
+
+<div class="modal" id="modal">
+  <div class="mbox">
+    <h3>添加一所学校</h3>
+    <div class="frow"><span>学校名称</span><input type="text" id="addName" placeholder="例如：XX中学"></div>
+    <div class="frow"><span>2026 年录取线（分）</span><input type="number" id="addLine" step="0.1" placeholder="例如：715"></div>
+    <div class="note" style="margin:0">只存在你这台电脑的浏览器里，不会上传。</div>
+    <div class="btns">
+      <button class="btn ghost" id="addCancel" type="button">取消</button>
+      <button class="btn pri" id="addOk" type="button">保存</button>
+    </div>
+  </div>
+</div>
+
+<script src="data.js"></script>
+<script>
+(function(){
+"use strict";
+var ZK = window.ZK;
+if(!ZK || !ZK.cities){
+  document.body.innerHTML = "<p style='padding:40px'>数据文件 data.js 没加载成功，请确认它和 index.html 在同一个文件夹里。</p>";
+  return;
+}
+var W = ZK.meta.weights;
+var SUBJ = ["语文","数学","英语","物理","化学","道德与法治","历史","地理","生物"];
+var MAX  = {"语文":150,"数学":150,"英语":150,"物理":100,"化学":100,"道德与法治":100,"历史":100,"地理":100,"生物":100};
+var PE = ZK.pe;
+var $ = function(id){ return document.getElementById(id); };
+var KEY = "fjzk_v2";
+
+/* ---------------- 体育项目定义 ---------------- */
+var PROJ = {
+  run1000:{n:"1000米跑", t:"mmss", w:15, tab:"bikao", colM:"run1000m", g:"m", tip:"分:秒，例 4:20"},
+  run800 :{n:"800米跑",  t:"mmss", w:15, tab:"bikao", colF:"run800f",  g:"f", tip:"分:秒，例 4:05"},
+  swim   :{n:"200米游泳",t:"mmss", w:15, tab:"bikao", colM:"swimM", colF:"swimF", tip:"分:秒，不限泳姿"},
+  bball  :{n:"篮球运球绕杆往返", t:"sec",  w:9, tab:"choukao", colM:"bballM", colF:"bballF", tip:"秒，例 13.2"},
+  football:{n:"足球运球绕杆",    t:"sec",  w:9, tab:"choukao", colM:"footballM", colF:"footballF", tip:"秒，例 9.8"},
+  volley :{n:"排球40秒对墙垫球",  t:"cnt",  w:9, tab:"choukao", colM:"volleyM", colF:"volleyF", tip:"40 秒内次数"},
+  run50  :{n:"50米跑",     t:"sec", w:8, tab:"xuan", colM:"m50", colF:"f50", tip:"秒，例 7.5"},
+  jump   :{n:"立定跳远",   t:"cm",  w:8, tab:"xuan", colM:"jump", colF:"jump", tip:"厘米，例 240"},
+  rope   :{n:"1分钟跳绳",  t:"cnt", w:8, tab:"xuan", colM:"rope", colF:"rope", tip:"次数"},
+  pull   :{n:"引体向上",   t:"cnt", w:8, tab:"xuan", colM:"pull", colF:"pull", tip:"次数"},
+  ball   :{n:"双手头上前掷实心球", t:"m", w:8, tab:"xuan", colM:"ball", colF:"ball", tip:"米，例 8.5"},
+  situp  :{n:"1分钟仰卧起坐", t:"cnt", w:8, tab:"xuan", colM:"situp", colF:"situp", tip:"次数"}
+};
+function projName(id, gender){
+  if(id === "pull") return gender === "m" ? "引体向上" : "斜身引体";
+  return PROJ[id].n;
+}
+function rowsFor(p, g){
+  if(p.tab === "bikao") return PE.bikao;
+  if(p.tab === "choukao") return PE.choukao;
+  return g === "m" ? PE.xuanM : PE.xuanF;
+}
+function seriesOf(id, g){
+  var p = PROJ[id]; if(!p) return null;
+  var col = g === "m" ? p.colM : p.colF;
+  if(!col) return null;
+  var rows = rowsFor(p, g), out = [];
+  rows.forEach(function(r){ if(r[col] !== null && r[col] !== undefined) out.push({s:r.s, v:r[col]}); });
+  out.sort(function(a,b){ return b.s - a.s; });
+  return out;
+}
+function isLowerBetter(id){
+  var t = PROJ[id].t;
+  return t === "mmss" || t === "sec";
+}
+function findScore(id, g, value){
+  var ser = seriesOf(id, g);
+  if(!ser || !ser.length) return null;
+  var lower = isLowerBetter(id);
+  for(var i=0;i<ser.length;i++){
+    var x = ser[i];
+    if(lower){ if(value <= x.v + 1e-9) return x.s; }
+    else { if(value >= x.v - 1e-9) return x.s; }
+  }
+  return 0;
+}
+function parsePerf(id, raw){
+  if(raw === null || raw === undefined) return null;
+  var s = String(raw).trim();
+  if(!s) return null;
+  if(PROJ[id].t === "mmss"){
+    // 4:20 / 4'20" / 4分20 / 4.20 都当成分·秒
+    var m = s.match(/^(\d{1,2})\s*[:'′分]\s*(\d{1,2}(?:\.\d+)?)/);
+    if(m) return parseInt(m[1],10)*60 + parseFloat(m[2]);
+    var m3 = s.match(/^(\d{1,2})[.．](\d{1,2})$/);
+    if(m3 && parseInt(m3[1],10) <= 20) return parseInt(m3[1],10)*60 + parseFloat(m3[2]);
+    var m2 = s.match(/^(\d+(?:\.\d+)?)$/);
+    if(m2 && parseFloat(m2[1]) > 30) return parseFloat(m2[1]); // 直接填总秒数
+    return null;
+  }
+  s = s.replace(/["″”]/g, ".").replace(/[′']/g, ":");
+  var n = parseFloat(s);
+  return isFinite(n) ? n : null;
+}
+function fmtPerf(id, v){
+  if(v === null) return "—";
+  if(PROJ[id].t === "mmss"){
+    var m = Math.floor(v/60), sec = v - m*60;
+    return m + "'" + (sec<10?"0":"") + (Math.round(sec*10)/10) + '"';
+  }
+  return String(v);
+}
+
+/* ---------------- 状态 ---------------- */
+var state = {
+  scene:"daily", grade:"9", gender:"m",
+  city:"fuzhou", area:"shiqu",
+  scores:{}, geoUnlock:false,
+  pe:{ bikao:"run1000", choukao:"volley", xuan:["ball","rope"], val:{} },
+  diffAdj:0, base:"2026", driftY:4, driftB:6, hasDX:false, dxDrop:20,
+  myRank:0, gradeN:0, dxQuota:0,
+  picks:[null,null,null], custom:[]
+};
+
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){} }
+function load(){
+  try{
+    var raw = localStorage.getItem(KEY); if(!raw) return;
+    var o = JSON.parse(raw);
+    if(o && typeof o === "object"){
+      for(var k in o){ if(k in state) state[k] = o[k]; }
+    }
+    if(!state.pe) state.pe = {bikao:"run1000",choukao:"volley",xuan:["ball","rope"],val:{}};
+    if(!state.pe.val) state.pe.val = {};
+  }catch(e){}
+}
+function cityObj(){ for(var i=0;i<ZK.cities.length;i++) if(ZK.cities[i].id===state.city) return ZK.cities[i]; return ZK.cities[0]; }
+function areaObj(){ var c=cityObj(); for(var i=0;i<c.areas.length;i++) if(c.areas[i].id===state.area) return c.areas[i]; return c.areas[0]; }
+function num(v){ if(v===""||v===null||v===undefined) return null; var n=parseFloat(v); return isFinite(n)?n:null; }
+function clamp(v,lo,hi){ return Math.max(lo, Math.min(hi,v)); }
+function round1(v){ return Math.round(v*10)/10; }
+function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+
+/* ---------------- 文化课 ---------------- */
+function peCalc(){
+  var g = state.gender, pe = state.pe;
+  var items = [], total = 0, filled = 0;
+  var need = 2 + ((pe.xuan || []).length);
+  function add(id){
+    if(!id) return;
+    var raw = parsePerf(id, pe.val[id]);
+    var pct = raw === null ? null : findScore(id, g, raw);
+    var conv = pct === null ? null : Math.round(pct * PROJ[id].w / 100);
+    if(conv !== null){ total += conv; filled++; }
+    items.push({id:id, raw:raw, pct:pct, conv:conv, w:PROJ[id].w});
+  }
+  add(pe.bikao);
+  add(pe.choukao);
+  (pe.xuan||[]).forEach(function(id){ add(id); });
+  return { items:items, total:total, filled:filled, need:need,
+           complete: (filled === 4 && (pe.xuan || []).length === 2) };
+}
+
+function calc(){
+  var rows = [], culture = 0, filled = 0;
+  SUBJ.forEach(function(k){
+    var raw = num(state.scores[k]);
+    var max = MAX[k], w = W[k];
+    if(raw !== null) raw = clamp(raw, 0, max);
+    var got = raw === null ? null : round1(raw*w);
+    if(raw !== null) filled++;
+    culture += (got === null ? 0 : got);
+    rows.push({k:k, raw:raw, max:max, w:w, full:round1(max*w), got:got,
+               rate: raw===null?null:raw/max});
+  });
+  var pc = peCalc();
+  return {
+    rows:rows, culture:round1(culture), pe:pc.total, peItems:pc.items, peComplete:pc.complete,
+    total:round1(culture + pc.total), filled:filled, complete:(filled===9 && pc.complete)
+  };
+}
+
+/* ---------------- 渲染：科目 ---------------- */
+function renderSubjects(){
+  var g9 = (state.grade === "9");
+  var box = $("subjBox");
+  var h = "";
+  function row(k){
+    var locked = g9 && (k === "地理" || k === "生物") && !state.geoUnlock;
+    h += '<div class="subj'+(locked?" locked":"")+'">'+
+      '<div class="nm">'+k+'<em>'+(W[k]===1?"150":"×"+Math.round(W[k]*100)+"%")+'</em>'+
+        (locked?'<span class="badge lock" title="小中考已考，成绩已锁定">已定</span>':'')+'</div>'+
+      '<input type="number" id="s_'+k+'" min="0" max="'+MAX[k]+'" step="0.5" inputmode="decimal" placeholder="0"'+
+        (locked?" disabled":"")+'>'+
+      '<div class="out" id="o_'+k+'">—</div></div>';
+  }
+  SUBJ.forEach(function(k){
+    if(k === "物理") h += '<div class="divider"></div><div class="mini-h">折算科目（卷面各 100 分）</div>';
+    row(k);
+  });
+  box.innerHTML = h;
+
+  SUBJ.forEach(function(k){
+    var el = $("s_"+k);
+    el.value = state.scores[k] === undefined ? "" : state.scores[k];
+    el.oninput = function(){ state.scores[k] = el.value; renderAll(); save(); };
+  });
+
+  var gn = $("geoNote");
+  if(g9 && !state.geoUnlock){
+    gn.innerHTML = '九年级：地理、生物是 <b>八年级下学期（2026 年 6 月）小中考</b> 的成绩，已经定下来了，按 30% 计入总分。'+
+      '<span class="link" id="geoUnlock">填错了？点这里修改</span>';
+    var lk = $("geoUnlock");
+    if(lk) lk.onclick = function(){ state.geoUnlock = true; renderSubjects(); renderAll(); save(); };
+  }else if(g9 && state.geoUnlock){
+    gn.innerHTML = '已解锁：修改完记得再点一次锁定，避免以后误改。<span class="link" id="geoRelock">改好了，重新锁定</span>';
+    var rk = $("geoRelock");
+    if(rk) rk.onclick = function(){ state.geoUnlock = false; renderSubjects(); renderAll(); save(); };
+  }else{
+    gn.innerHTML = '七、八年级：地理、生物还没参加小中考，这里填的是最近一次考试分数，仅供估算。';
+  }
+}
+
+/* ---------------- 渲染：体育 ---------------- */
+function renderPE(){
+  var g = state.gender, pe = state.pe;
+  var box = $("peBox");
+  var h = "";
+
+  // 必考
+  var bkOptions = g === "m" ? [["run1000","1000米跑"],["swim","200米游泳"]] : [["run800","800米跑"],["swim","200米游泳"]];
+  h += '<div class="peCat"><div class="peHead"><span class="pn">必考</span><span class="pw">15 分 · 二选一</span>'+
+       '<div class="seg" style="margin-left:auto" data-cat="bikao">'+
+       bkOptions.map(function(o){ return '<button data-v="'+o[0]+'" class="'+(pe.bikao===o[0]?"on":"")+'">'+o[1]+'</button>'; }).join("")+
+       '</div></div></div>';
+
+  // 选考
+  h += '<div class="peCat"><div class="peHead"><span class="pn">选考</span><span class="pw">9 分 · 三大球选一</span>'+
+       '<div class="seg" style="margin-left:auto" data-cat="choukao">'+
+       [["bball","篮球"],["football","足球"],["volley","排球"]].map(function(o){
+         return '<button data-v="'+o[0]+'" class="'+(pe.choukao===o[0]?"on":"")+'">'+o[1]+'</button>'; }).join("")+
+       '</div></div></div>';
+
+  // 抽选考
+  var c2027 = ZK.pe2027[state.city] || [];
+  var pool = c2027.length ? c2027.slice() : ["run50","jump","rope","pull","ball","situp"];
+  h += '<div class="peCat"><div class="peHead"><span class="pn">抽选考</span>'+
+       '<span class="pw">16 分 · 选 2 项（每项 8 分）</span></div>'+
+       '<div class="pePool">'+(c2027.length
+          ? ("本区 2027 年抽到的是 <b>"+pool.map(function(id){return projName(id,g);}).join("、")+"</b>，从中选 2 项考。")
+          : ("本区 2027 年抽选考项目还没公布，下面 6 项全部可选。"))+'</div>'+
+       '<div class="seg" data-cat="xuan">'+
+       pool.map(function(id){
+         var on = (pe.xuan||[]).indexOf(id) >= 0;
+         return '<button data-v="'+id+'" class="'+(on?"on":"")+'">'+projName(id,g)+'</button>'; }).join("")+
+       '</div></div></div>';
+
+  // 输入行
+  var rows = [], seen = {};
+  [pe.bikao, pe.choukao].concat(pe.xuan || []).forEach(function(id){
+    if(id && !seen[id]){ seen[id] = 1; rows.push(id); }
+  });
+
+  h += '<div style="margin-top:12px">';
+  rows.forEach(function(id){
+    var p = PROJ[id]; if(!p) return;
+    var col = g === "m" ? p.colM : p.colF;
+    if(!col) return;
+    var ser = seriesOf(id, g);
+    var full = ser && ser.length ? ser[0].v : null;
+    h += '<div class="peRow">'+
+      '<div class="pnm">'+projName(id,g)+'<small>'+p.tip+(full!==null?(" ｜ 满分 "+fmtPerf(id,full)):"")+'</small></div>'+
+      '<input type="text" id="pe_'+id+'" inputmode="text" placeholder="填成绩" value="'+esc(pe.val[id]===undefined?"":pe.val[id])+'">'+
+      '<div class="psc" id="pc_'+id+'">—</div></div>';
+  });
+  h += '</div>';
+  box.innerHTML = h;
+
+  // 绑定
+  box.querySelectorAll(".seg").forEach(function(seg){
+    var cat = seg.getAttribute("data-cat");
+    seg.querySelectorAll("button").forEach(function(b){
+      b.onclick = function(){
+        var v = b.getAttribute("data-v");
+        if(cat === "xuan"){
+          var arr = (state.pe.xuan || []).slice();
+          var idx = arr.indexOf(v);
+          if(idx >= 0) arr.splice(idx,1);
+          else { if(arr.length >= 2) arr.shift(); arr.push(v); }
+          state.pe.xuan = arr;
+        }else{
+          state.pe[cat] = v;
+        }
+        renderPE(); renderAll(); save();
+      };
+    });
+  });
+  rows.forEach(function(id){
+    var el = $("pe_"+id);
+    if(!el) return;
+    el.oninput = function(){ state.pe.val[id] = el.value; renderAll(); save(); };
+  });
+}
+
+/* ---------------- 渲染：总分/明细 ---------------- */
+function renderTotal(r){
+  $("bigTotal").textContent = r.total.toFixed(1);
+  $("mCulture").textContent = r.culture.toFixed(1);
+  $("mPE").textContent = r.pe;
+
+  var c = cityObj();
+  var gl = (c.gate && c.gate[state.area]) ? c.gate[state.area] : null;
+  var txt;
+  if(!r.complete){
+    var miss = (9 - r.filled);
+    txt = miss > 0 ? ("还有 " + miss + " 门文化课没填") : "体育还有项目没填";
+  }else if(gl && gl.length){
+    var eqv = eqScore(r.total);
+    var best = null;
+    gl.forEach(function(g){
+      var gv = gateVal(g.v);
+      if(best===null || Math.abs(gv-eqv) < Math.abs(gateVal(best.v)-eqv)) best = g;
+    });
+    var bv = gateVal(best.v), d = eqv - bv;
+    txt = best.name + " " + bv + " 分 · " + (d>=0 ? "高出 " : "还差 ") + Math.abs(d).toFixed(1) + " 分";
+  }else{
+    txt = "成绩已填完";
+  }
+  $("mRank").textContent = txt;
+
+  var maxFull = 0;
+  r.rows.forEach(function(x){ maxFull += x.full; });
+  maxFull += 40;
+  var html = "";
+  r.rows.forEach(function(x){
+    var w = x.got === null ? 0 : (x.got / maxFull * 100);
+    html += '<div class="bar"><div class="bn">'+x.k+'</div>'+
+            '<div class="bt"><div class="bf" style="width:'+w.toFixed(2)+'%"></div></div>'+
+            '<div class="bv">'+(x.got===null?"—":x.got.toFixed(1))+'</div></div>';
+  });
+  var pw = (r.pe/maxFull*100);
+  html += '<div class="bar"><div class="bn">体育</div>'+
+          '<div class="bt"><div class="bf" style="width:'+pw.toFixed(2)+'%;background:linear-gradient(90deg,#c8452f,#e07a63)"></div></div>'+
+          '<div class="bv">'+r.pe+'</div></div>';
+  $("bars").innerHTML = html;
+
+  r.rows.forEach(function(x){
+    var el = $("o_"+x.k); if(!el) return;
+    el.innerHTML = x.got === null ? "—" : ("<b>"+x.got.toFixed(1)+"</b> / "+x.full);
+  });
+  r.peItems.forEach(function(it){
+    var el = $("pc_"+it.id); if(!el) return;
+    if(it.pct === null){ el.innerHTML = "—"; }
+    else{
+      el.innerHTML = '<span style="color:#8494a6">'+it.pct+'分×'+PROJ[it.id].w+'%</span><br><b>'+it.conv+' 分</b>';
+    }
+  });
+  $("peTotal").textContent = r.pe;
+  var peFilled = r.peItems.filter(function(x){ return x.pct !== null; }).length;
+  $("peHint").textContent = peFilled === 4 ? "（4 项都已算）" : "（已填 " + peFilled + " / 4 项）";
+}
+
+/* ---------------- 总评 ---------------- */
+function renderReview(r){
+  var c = cityObj();
+  var rate = r.total / 800;
+  var arr = r.rows.filter(function(x){ return x.rate !== null; })
+                   .sort(function(a,b){ return b.rate - a.rate; });
+  var kpi = "";
+  kpi += '<div class="kpi"><div class="kt">投档总分</div><div class="kv">'+r.total.toFixed(1)+'<small>/800</small></div></div>';
+  kpi += '<div class="kpi"><div class="kt">得分率</div><div class="kv">'+(rate*100).toFixed(1)+'<small>%</small></div></div>';
+  kpi += '<div class="kpi"><div class="kt">体育</div><div class="kv">'+r.pe+'<small>/40</small></div></div>';
+  var rankTxt = "—";
+  var gl = (c.gate && c.gate[state.area]) ? c.gate[state.area] : null;
+  if(gl && gl.length && r.complete){
+    var passed = gl.filter(function(g){ return r.total >= g.v; });
+    rankTxt = passed.length ? ("已过 " + passed.length + " 条线") : "未达线";
+  }
+  kpi += '<div class="kpi"><div class="kt">批次线</div><div class="kv" style="font-size:14px">'+rankTxt+'</div></div>';
+  $("kpis").innerHTML = kpi;
+
+  var html = "";
+  var sceneName = {daily:"这次平时测验", mid:"这次期中/期末", mock:"这次模拟考", zk:"这次中考"}[state.scene];
+  if(!r.complete){
+    html += "<p>还没填完，先把 9 门文化课和体育 3 项都填上，总评才有意义。</p>";
+    html += '<div class="concl">现在填完的部分：折算 <b>'+r.total.toFixed(1)+'</b> 分。</div>';
+    $("review").innerHTML = html;
+    $("rvTip").textContent = "填完再生成";
+    return;
+  }
+
+  var eq = eqScore(r.total);
+  var eqTxt = (Math.abs(eq - r.total) < 0.05) ? "" :
+    ("，按这次卷子难度换算成中考等效分是 <b>"+eq.toFixed(1)+"</b>");
+  html += "<p>按 2026 年福建 800 分制折算，"+sceneName+"的投档总分是 <b>"+r.total.toFixed(1)+"</b> 分"+eqTxt+"（满分 800，得分率 <b>"+(rate*100).toFixed(1)+"%</b>）。"+
+          "其中文化课 <b>"+r.culture.toFixed(1)+"</b> 分、体育 <b>"+r.pe+"</b> 分（丢 "+(40-r.pe)+" 分）。</p>";
+
+  if(arr.length >= 3){
+    var top3 = arr.slice(0,3), low3 = arr.slice(-3).reverse();
+    html += "<p>最强的是 "+top3.map(function(x){ return "<b>"+x.k+"</b>（"+(x.rate*100).toFixed(0)+"%）"; }).join("、")+
+            "；相对最弱的是 "+low3.map(function(x){ return "<b>"+x.k+"</b>（"+(x.rate*100).toFixed(0)+"%）"; }).join("、")+"。</p>";
+  }
+
+  if(gl && gl.length){
+    var lines = gl.map(function(g){
+      var gv = gateVal(g.v), d = eq - gv;
+      return g.name+" <b>"+gv+"</b>（"+(d>=0?("高 "+d.toFixed(1)):("差 "+Math.abs(d).toFixed(1)))+"）";
+    });
+    html += "<p>在"+c.name+"·"+areaObj().name+"，对照"+(state.base==="2027"?" 2027 预测线":" 2026 年实际线")+"："+lines.join("；")+"。</p>";
+  }
+
+  var est = estRank(eq);
+  if(est){
+    html += "<p>按" + est.note + "推算，这个分数大约在全市第 <b>" + est.rank + "</b> 名（前 <b>" +
+            (est.pct*100).toFixed(1) + "%</b>），全市考生约 " + est.n + " 人。" +
+            "这是按 2026 年公开分数段插值出来的，中间分段人多、误差可能上千名，当范围看，别当准数。</p>";
+  }else{
+    html += "<p>这个地区没有公开的分数段统计，估不了全市排名。</p>";
+  }
+
+  // 结论
+  var concl = "";
+  if(gl && gl.length){
+    var sorted = gl.slice().sort(function(a,b){ return b.v-a.v; });
+    var reached = sorted.filter(function(g){ return eq >= gateVal(g.v); });
+    if(reached.length === sorted.length) concl = "已经在这批线之上，重点是保持稳定、别在细节上丢分。";
+    else if(reached.length === 0) concl = "暂时还没碰到任何一条线，优先把基础分捡回来，比追难点更划算。";
+    else{
+      var next = sorted.filter(function(g){ return eq < gateVal(g.v); }).pop();
+      concl = "够到了「"+reached[0].name+"」，但要上「"+next.name+"」还差 "+(gateVal(next.v)-eq).toFixed(1)+" 分。";
+    }
+  }else{
+    concl = "这个地区没有公开控制线，主要看下面的学校线定位。";
+  }
+  html += '<div class="concl">'+concl+'</div>';
+  $("review").innerHTML = html;
+  $("rvTip").textContent = c.name + " · " + areaObj().name;
+}
+
+/* ---------------- 提升计划 ---------------- */
+var TIPS = {
+  "语文":{
+    low:["先把课内古诗文默写、文学常识拿满，这是最稳的分。","作文别求新，练熟一个通用素材，学会一材三用。"],
+    mid:["现代文阅读按题型背答题套路（作用题、赏析题各一套）。","文言文实词每天 10 个，滚动复习。"],
+    good:["作文要稳在 45 分以上，靠结构和细节，每两周写一篇完整的。","阅读扣分多集中在「概括不全」，答题先分层再落笔。"],
+    top:["保默写和作文不失误，主攻阅读最后一题的深度分析。"]
+  },
+  "数学":{
+    low:["回归课本例题和课后习题，先保证选择填空前 10 题、解答前 3 题不丢分。","计算错误单独记一本，每天 10 分钟限时算。"],
+    mid:["主攻中档题（二次函数、几何证明），错题按知识点归类而不是按题号。","每道错题写一行「错在哪一步」，比抄答案有用。"],
+    good:["压轴题只做第一问，把时间留给中档题的正确率。","每周一套限时卷，练答题节奏和取舍。"],
+    top:["主攻压轴的步骤分和书写规范，避免会做却扣步骤分。"]
+  },
+  "英语":{
+    low:["先过高频 800 词，每天 20 个滚动复习，要求看到就认识。","听力每天 10 分钟，用真题音频磨耳朵。"],
+    mid:["语法专项（时态、非谓语、从句）各刷 20 题。","阅读每天 2 篇，限时 8 分钟一篇。"],
+    good:["作文背 5 个万能句式 + 3 篇范文结构。","完形填空看上下文线索，不要只凭语法选。"],
+    top:["主攻作文的表达升级和阅读的推理判断题。"]
+  },
+  "物理":{
+    low:["先把公式、单位、方向搞清楚，力学和电学各画一遍知识树。","只做课本习题和基础卷，别碰难题。"],
+    mid:["实验题按「目的—原理—步骤—结论」四段背。","计算题先写公式再代数字，单位不能漏。"],
+    good:["主攻电学+力学综合计算，错题重做三遍。","多选题少丢分，拿不准就只选最有把握的。"],
+    top:["主攻图像题和探究题的表述。" ]
+  },
+  "化学":{
+    low:["先背元素符号、化合价、常见方程式，每天 5 个。","基础选择题别丢分，那是最好拿的分。"],
+    mid:["实验探究题按「操作—现象—结论」写。","溶液计算练熟质量分数和稀释。"],
+    good:["推断题和计算题的规范书写，方程式配平不允许错。","错题按「哪类物质」归类。"],
+    top:["主攻探究题的方案设计和误差分析。"]
+  },
+  "道德与法治":{
+    low:["先把课本目录背下来，知道每课讲什么。","选择题靠排除绝对化表述（一定、全部、唯一）。"],
+    mid:["背 20 个高频考点，每个考点配一个材料题的答题角度。","每周练 1 道材料题，写完对照答案改。"],
+    good:["材料题按「观点+材料+结论」三段写，别只抄材料。","时政热点整理成一句话+一个考点。"],
+    top:["主攻开放题的表述完整度和时政结合。"]
+  },
+  "历史":{
+    low:["拉时间轴（中国近现代史+世界史），把事件的时间、原因、影响串起来。","选择题先抓题干时间，再看选项。"],
+    mid:["材料题练「提取信息—结合所学—组织答案」。","注意区分根本原因和直接原因。"],
+    good:["主攻小论文/论述题的史论结合，论点要有史实撑。","每周 2 道论述题，练结构。"],
+    top:["主攻材料的深层解读和多角度比较。"]
+  },
+  "地理":{
+    low:["先过一遍地图（中国地形、气候、主要国家），地理一半的分数在图里。","把经纬度、等高线、气候类型图各练 10 题。"],
+    mid:["综合题按「位置—自然—人文」框架答。","区域地理做成表格对比记忆。"],
+    good:["主攻区域综合分析，答题要点化、编号化。","材料图先看图例和坐标轴。"],
+    top:["主攻开放性设问和材料分析。"]
+  },
+  "生物":{
+    low:["先把课本黑体字概念和图示过一遍。","实验题只考课本实验，把 6 个必考实验的原理背熟。"],
+    mid:["遗传、生态系统、人体生理三大块专项突破。","术语不能写错别字，这是白丢分。"],
+    good:["主攻实验探究设计和曲线图分析。","图表题先看横纵坐标代表什么。"],
+    top:["主攻综合题的表述完整度。"]
+  }
+};
+function band(rate){ if(rate < 0.6) return "low"; if(rate < 0.75) return "mid"; if(rate < 0.88) return "good"; return "top"; }
+
+function renderPlan(r){
+  var sec = $("secPlan");
+  if(state.scene === "zk"){
+    sec.style.display = "none";
+    return;
+  }
+  sec.style.display = "";
+
+  if(!r.complete){
+    $("plan").innerHTML = '<div class="note" style="margin-top:0">把成绩填完，才能算出哪几科最值得补。</div>';
+    $("planTip").textContent = "";
+    return;
+  }
+
+  // 提分空间 = (满分 - 卷面) × 权重
+  var cand = r.rows.filter(function(x){ return x.raw !== null; }).map(function(x){
+    return { k:x.k, w:x.w, room:(x.max - x.raw), gain: round1((x.max - x.raw) * x.w), rate:x.rate,
+             target90: round1((x.max*0.9 - x.raw) * x.w) };
+  }).filter(function(x){ return x.room > 0; })
+    .sort(function(a,b){ return b.gain - a.gain; });
+
+  var top = cand.slice(0,3);
+  var html = "";
+  if(!top.length){
+    html = '<div class="note" style="margin-top:0">九门都接近满分，没有明显的短板。保持手感就行。</div>';
+  }else{
+    top.forEach(function(x, i){
+      var tipSet = TIPS[x.k] ? TIPS[x.k][band(x.rate)] : [];
+      html += '<div class="planItem">'+
+        '<div class="pi-no">'+(i+1)+'</div>'+
+        '<div class="pi-b"><h4>'+x.k+'<span class="room">最多还能加 '+x.gain.toFixed(1)+' 分</span></h4>'+
+        '<div class="why">本次得分率 '+(x.rate*100).toFixed(0)+'%，卷面还差 '+x.room+' 分到满分，这科按 '+Math.round(x.w*100)+'% 计入总分，所以影响 '+x.gain.toFixed(1)+' 分。</div>'+
+        '<ul>'+tipSet.map(function(t){ return "<li>"+t+"</li>"; }).join("")+'</ul>'+
+        '</div></div>';
+    });
+  }
+
+  // 体育
+  var peLoss = 40 - r.pe;
+  if(peLoss > 0){
+    var peTips = [];
+    r.peItems.forEach(function(it){
+      if(it.conv === null) return;
+      var p = PROJ[it.id], g = state.gender;
+      var ser = seriesOf(it.id, g);
+      var fullV = ser && ser.length ? ser[0].v : null;
+      if(it.pct < 100 && fullV !== null){
+        peTips.push(projName(it.id,g)+" 现在 "+fmtPerf(it.id,it.raw)+"（"+it.pct+" 分档），满分要 "+fmtPerf(it.id,fullV));
+      }
+    });
+    if(peTips.length){
+      html += '<div class="planItem"><div class="pi-no">4</div><div class="pi-b">'+
+        '<h4>体育<span class="room">丢 '+peLoss+' 分</span></h4>'+
+        '<div class="why">体育是「练了就有」的分，比文化课的提分确定性高。</div><ul>'+
+        peTips.map(function(t){ return "<li>"+t+"</li>"; }).join("")+
+        '</ul></div></div>';
+    }
+  }
+
+  // 目标
+  if(top.length){
+    var add90 = 0;
+    top.forEach(function(x){ if(x.target90 > 0) add90 += x.target90; });
+    var goal = r.total + add90;
+    html += '<div class="goal">如果把这 3 科都提到 <b>90%</b> 的得分率，总分大约能到 <b>'+goal.toFixed(1)+'</b> 分'+
+      (add90>0?('（+'+add90.toFixed(1)+'）'):'')+'。先别贪多，一次只盯 1–2 科。</div>';
+  }
+  $("plan").innerHTML = html;
+  $("planTip").textContent = state.scene === "mock" ? "按模拟考结果排的" : "按这次考试排的";
+}
+
+/* ---------------- 批次线 ---------------- */
+function renderGates(r){
+  var c = cityObj();
+  var gl = (c.gate && c.gate[state.area]) ? c.gate[state.area] : [];
+  if(!gl.length){
+    $("gates").innerHTML = '<div class="gate">该区域暂无公开的控制线数据，可直接看下面的学校线</div>';
+    return;
+  }
+  $("gates").innerHTML = gl.map(function(g){
+    var gv = gateVal(g.v);
+    var hit = r.complete ? (eqScore(r.total) >= gv) : null;
+    var cls = hit === null ? "" : (hit ? "hit" : "miss");
+    var pill = hit === null ? "" : (hit ? '<span class="pill ok">已达线</span>' : '<span class="pill bad">未达线</span>');
+    var pt = state.base === "2027" ? '<span class="pill mid">预测</span>' : '';
+    return '<div class="gate '+cls+'">'+g.name+' <b>'+gv+'</b>'+pt+pill+'</div>';
+  }).join("");
+}
+
+/* ---------------- 志愿 ---------------- */
+var lastRec = null;
+
+/* 定向生：福州规则——第一志愿1A有效，统招线以下45分内，按校内排名取 */
+var DX_KEYS = ["福州一中","福州二中","福州三中","福州四中","福州格致中学","福州八中","福建师大附中","福州高级中学","长乐一中"];
+function isDXSchool(name){
+  if(state.city !== "fuzhou") return false;
+  if(/中加|中美|中澳|国际|双语/.test(name)) return false;
+  for(var i=0;i<DX_KEYS.length;i++) if(name.indexOf(DX_KEYS[i]) === 0) return true;
+  return false;
+}
+/* 2026 实际线 → 2027 预测线 */
+function recLine(x){
+  if(state.base === "2027") return round1(x.line + state.driftY + state.driftB);
+  return x.line;
+}
+/* 本次分 → 中考等效分 */
+function diffAdj(){ return Number(state.diffAdj) || 0; }
+function eqScore(total){ return round1(total + diffAdj()); }
+/* --------- 预估全市排名（基于 2026 年公开分数段） --------- */
+function rankData(){
+  var k = state.city + ":" + state.area;
+  return ZK.rank[k] || ZK.rank[state.city] || null;
+}
+function estRank(score){
+  var rd = rankData();
+  if(!rd || !rd.pts || rd.pts.length < 2) return null;
+  var adj = (state.base === "2027") ? (state.driftY + state.driftB) : 0;
+  var s0 = score - adj;
+  var pts = rd.pts.slice().sort(function(a,b){ return b[0]-a[0]; });
+  var r = null;
+  if(s0 >= pts[0][0]){
+    var p0 = pts[0], p1 = pts[1];
+    r = p0[1] + (s0-p0[0]) * ((p1[1]-p0[1])/(p1[0]-p0[0]));
+  }else if(s0 <= pts[pts.length-1][0]){
+    var q0 = pts[pts.length-2], q1 = pts[pts.length-1];
+    r = q1[1] + (s0-q1[0]) * ((q1[1]-q0[1])/(q1[0]-q0[0]));
+  }else{
+    for(var i=0;i<pts.length-1;i++){
+      var a = pts[i], b = pts[i+1];
+      if(s0 <= a[0] && s0 >= b[0]){
+        var t = (a[0]-s0)/(a[0]-b[0]);
+        r = a[1] + t*(b[1]-a[1]);
+        break;
+      }
+    }
+  }
+  if(r === null || !isFinite(r)) return null;
+  r = Math.min(Math.max(r, 1), rd.n);
+  r = r >= 1000 ? Math.round(r/100)*100 : Math.round(r);
+  return {rank:r, n:rd.n, pct:r/rd.n, note:rd.note||"2026 年分数段"};
+}
+function gateVal(v){ return state.base === "2027" ? round1(v + state.driftY + state.driftB) : v; }
+
+function allSchools(){
+  var c = cityObj();
+  var list = (c.schools || []).filter(function(s){ return s.area.indexOf(state.area) >= 0; })
+    .map(function(s){ return {name:s.name, line:s.line, pos:s.pos, cls:s.cls, mine:false}; });
+  state.custom.forEach(function(s){
+    if(s.city === state.city && s.area === state.area)
+      list.push({name:s.name, line:s.line, pos:null, cls:null, mine:true});
+  });
+  return list;
+}
+function recommend(r){
+  var s = eqScore(r.total);
+  var list = allSchools();
+  var reach = [], stable = [], safe = [];
+  list.forEach(function(x){
+    if(!x.line) return;
+    x.pl = recLine(x);
+    x.dx = (state.hasDX && isDXSchool(x.name)) ? round1(x.pl - state.dxDrop) : null;
+    x.eff = (x.dx !== null) ? Math.min(x.pl, x.dx) : x.pl;
+    x.viaDX = (x.dx !== null) && (s < x.pl) && (s >= x.dx);   // 只能靠定向进
+    var d = s - x.eff; x.d = d;
+    if(d < 0 && d >= -25) reach.push(x);
+    else if(d >= 0 && d < 20) stable.push(x);
+    else if(d >= 20) safe.push(x);
+  });
+  reach.sort(function(a,b){ return a.line - b.line; });
+  stable.sort(function(a,b){ return b.line - a.line; });
+  safe.sort(function(a,b){ return b.line - a.line; });
+  return {s:s, reach:reach, stable:stable, safe:safe, list:list};
+}
+function clsLabel(x){ return x.cls ? "（"+x.cls+"）" : ""; }
+function dxTagText(){
+  if(state.myRank > 0 && state.dxQuota > 0) return state.myRank <= state.dxQuota ? "定向·名额内" : "定向·名额外";
+  return "靠定向";
+}
+function optHTML(x, bucket){
+  var on = state.picks[bucket] === x.name ? " on" : "";
+  var d = x.d;
+  var dTxt = (d>=0?"+":"") + d.toFixed(1);
+  var color = d>=0 ? "#1c7c54" : "#c0392b";
+  var ttl = esc(x.name) + " ｜ " + (state.base==="2027"?"2027 预测 ":"2026 实际 ") + x.pl +
+            (x.dx!==null ? " ｜ 定向预估 " + x.dx : "") + (x.pos ? " ｜ 全市位次 " + x.pos : "");
+  return '<div class="opt'+on+'" data-b="'+bucket+'" data-n="'+esc(x.name)+'" title="'+ttl+'">'+
+    '<div class="onm">'+esc(x.name)+clsLabel(x)+(x.mine?' <span class="pill mid">自</span>':'')+
+      (x.viaDX?'<span class="dxtag">'+dxTagText()+'</span>':'')+'</div>'+
+    '<div class="ol">'+x.eff+'</div>'+
+    '<div class="od" style="color:'+color+'">'+dTxt+'</div></div>';
+}
+function renderVol(r){
+  var rec = recommend(r);
+  var c = cityObj();
+  var hasLib = allSchools().length;
+  $("libTip").textContent = hasLib ? (hasLib + " 所 · " + (state.base==="2027"?"2027 预测线":"2026 实际线")) : "该区域学校库待补充";
+  $("libCount").textContent = hasLib + " 所";
+
+  function nearestAbove(){
+    var best = null;
+    rec.list.forEach(function(x){ if(x.line && x.line > rec.s && (!best || x.line < best.line)) best = x; });
+    return best;
+  }
+  function fill(bucket, arr, limit){
+    var box = $("c"+(bucket+1)), cnt = $("c"+(bucket+1)+"n");
+    if(!arr.length){
+      var msg;
+      if(!rec.list.length){
+        msg = bucket === 0 ? "这个区域还没录入学校线。可以在下面「添加我的学校」自己补，或者换到有数据的区域看。" : "—";
+      }else if(bucket === 0){
+        var n1 = nearestAbove();
+        msg = n1 ? ("再往上最近的 "+esc(n1.name)+" 线 "+n1.line+"，差 "+Math.abs(rec.s-n1.line).toFixed(1)+
+              " 分——属于要超常发挥才够得着的区间。想冲可以填，但别把它当稳。")
+              : "你已经在片区学校库的最高档，上面没有更高的学校了。";
+      }else if(bucket === 1){
+        msg = "你的分数上下 20 分内没有学校线卡在这里。可以打开下面「全部学校」，按实际线自己挑一档更近的。";
+      }else{
+        msg = "库里没有低于你 20 分的学校，说明你已在片区最高档；保底可考虑民办、综合高中班或中职本科「3+4」。";
+      }
+      box.innerHTML = '<div class="empty">'+msg+'</div>';
+      cnt.textContent = "";
+      return;
+    }
+    cnt.textContent = arr.length + " 所";
+    var more = arr.length > limit
+      ? '<div class="empty" style="padding:8px 12px;font-size:11.5px">还有 '+(arr.length-limit)+' 所没列出，展开下面「全部学校」看</div>' : "";
+    box.innerHTML = arr.slice(0,limit).map(function(x){ return optHTML(x,bucket); }).join("") + more;
+  }
+  fill(0, rec.reach, 5);
+  fill(1, rec.stable, 5);
+  fill(2, rec.safe, 5);
+
+  ["c1","c2","c3"].forEach(function(id){
+    $(id).querySelectorAll(".opt").forEach(function(el){
+      el.onclick = function(){
+        var b = parseInt(el.getAttribute("data-b"),10);
+        var n = el.getAttribute("data-n");
+        if(state.picks[b] === n) state.picks[b] = null; else state.picks[b] = n;
+        renderAll(); save();
+      };
+    });
+  });
+
+  lastRec = rec;
+  renderLib(rec);
+  renderSheet(rec);
+}
+function renderLib(rec){
+  var q = ($("libSearch").value || "").trim().toLowerCase();
+  var list = rec.list.slice().sort(function(a,b){ return b.line - a.line; });
+  if(q) list = list.filter(function(x){ return x.name.toLowerCase().indexOf(q) >= 0; });
+  if(!list.length){
+    $("libList").innerHTML = '<div class="lib-empty">'+(rec.list.length? "没搜到，换个关键词试试。" : "本区暂无学校数据。")+'</div>';
+    return;
+  }
+  $("libList").innerHTML = list.map(function(x){
+    var d = rec.s - x.eff;
+    var col = d >= 0 ? "#1c7c54" : "#c0392b";
+    return '<div class="lrow" data-n="'+esc(x.name)+'">'+
+      '<div class="ln">'+esc(x.name)+(x.mine?' <span class="pill mid">自</span>':'')+'</div>'+
+      '<div class="ll">'+x.eff+'</div>'+
+      '<div class="ld" style="color:'+col+'">'+(d>=0?"+":"")+d.toFixed(1)+'</div></div>';
+  }).join("");
+  $("libList").querySelectorAll(".lrow").forEach(function(el){
+    el.onclick = function(){
+      var n = el.getAttribute("data-n");
+      var slot = state.picks.indexOf(null);
+      if(slot < 0) slot = 2;
+      if(state.picks[slot] === n) state.picks[slot] = null; else state.picks[slot] = n;
+      renderAll(); save();
+    };
+  });
+}
+function renderSheet(rec){
+  var rows = "", all = allSchools();
+  for(var i=0;i<3;i++){
+    var nm = state.picks[i], s = null;
+    if(nm){ for(var j=0;j<all.length;j++) if(all[j].name===nm){ s = all[j]; break; } }
+    if(!s){
+      rows += '<div class="row3 blank"><div class="no">'+(i+1)+'</div><div class="sn">未选择</div>'+
+              '<div class="sl">—</div><div class="st">—</div></div>';
+    }else{
+      var dxl = (state.hasDX && isDXSchool(s.name)) ? round1(recLine(s) - state.dxDrop) : null;
+      var effL = (dxl !== null) ? Math.min(recLine(s), dxl) : recLine(s);
+      var d = rec.s - effL, tag, col;
+      if(d < 0){ tag = "需超常"; col = "#c0392b"; }
+      else if(d < 20){ tag = "较稳"; col = "#b26a00"; }
+      else { tag = "保底"; col = "#1c7c54"; }
+      if(dxl !== null && rec.s < recLine(s) && rec.s >= dxl){ tag = dxTagText(); col = "#12467a"; }
+      rows += '<div class="row3"><div class="no">'+(i+1)+'</div><div class="sn">'+esc(s.name)+'</div>'+
+              '<div class="sl">'+effL+' 线'+(dxl!==null?'<br><span style="font-size:10px;color:#12467a">定向'+dxl+'</span>':'')+
+              (s.pos?'<br><span style="font-size:10px;color:#a6b3c2">位'+s.pos+'</span>':'')+'</div>'+
+              '<div class="st" style="color:'+col+'">'+(d>=0?"+":"")+d.toFixed(1)+
+              '<br><span style="font-size:10.5px;color:'+col+'">'+tag+'</span></div></div>';
+    }
+  }
+  $("sheetRows").innerHTML = rows;
+  $("sheetRows").querySelectorAll(".row3").forEach(function(el, i){
+    if(!el.classList.contains("blank")){
+      el.style.cursor = "pointer"; el.title = "点一下移出";
+      el.onclick = function(){ state.picks[i] = null; renderAll(); save(); };
+    }
+  });
+  var n = state.picks.filter(Boolean).length;
+  $("sheetHint").textContent = n ? ("已选 " + n + " 所 · 等效分 " + rec.s.toFixed(1)) : "点上面的学校加入";
+
+  var c = cityObj();
+  $("ruleNote").innerHTML = "<b>填报规则提示：</b>" + (c.rule || "以当地中招办当年公布的志愿设置和投档规则为准。") +
+    "<br>福建各市志愿模式差别很大（平行志愿是「分数优先」，梯度志愿是「第一志愿最关键」），" +
+    "上面给的是<b>按分数落位</b>的建议，正式的志愿数量和顺序请对照你市当年的志愿表和投档细则。";
+}
+
+/* ---------------- 换算面板 ---------------- */
+function renderCalcBox(r){
+  $("rawScore").textContent = r.total.toFixed(1);
+  $("eqScore").textContent = eqScore(r.total).toFixed(1);
+  var adj = diffAdj();
+  var note;
+  $("diffV").textContent = (adj>0?"+":"") + adj + " 分";
+  var note;
+  if(!r.complete) note = "还没填完";
+  else if(adj === 0) note = "按「跟中考差不多」处理，不换算";
+  else if(adj > 0) note = "卷子偏难，等效分 +" + adj + "（大家分都低）";
+  else note = "卷子偏易，等效分 " + adj + "（大家分都高）";
+  $("eqNote").innerHTML = note;
+  // 分段按钮状态
+  $("baseSeg").querySelectorAll("button").forEach(function(b){
+    b.className = (b.getAttribute("data-v") === state.base) ? "on" : "";
+  });
+  $("dxOn").checked = !!state.hasDX;
+  $("schoolRow").style.display = state.hasDX ? "flex" : "none";
+  if($("myRank").value !== String(state.myRank || "")) $("myRank").value = state.myRank || "";
+  if($("gradeN").value !== String(state.gradeN || "")) $("gradeN").value = state.gradeN || "";
+  if($("dxQuota").value !== String(state.dxQuota || "")) $("dxQuota").value = state.dxQuota || "";
+  var sn = "";
+  if(state.myRank > 0 && state.gradeN > 0){
+    sn += "校内前 " + (state.myRank/state.gradeN*100).toFixed(1) + "%";
+  }
+  if(state.myRank > 0 && state.dxQuota > 0){
+    sn += (sn?"；":"") + (state.myRank <= state.dxQuota
+      ? "在定向名额内（第 " + state.myRank + " / " + state.dxQuota + "）"
+      : "在定向名额外（第 " + state.myRank + " / " + state.dxQuota + "）");
+  }
+  $("schoolNote").textContent = sn || "填了校内排名，能判断定向名额够不够";
+  $("driftY").value = state.driftY; $("driftYv").textContent = (state.driftY>0?"+":"") + state.driftY;
+  $("driftB").value = state.driftB; $("driftBv").textContent = (state.driftB>0?"+":"") + state.driftB;
+  $("dxDrop").value = state.dxDrop; $("dxDropv").textContent = "−" + state.dxDrop;
+}
+
+/* ---------------- 汇总 ---------------- */
+function renderAll(){
+  var r = calc();
+  renderTotal(r);
+  renderGates(r);
+  renderCalcBox(r);
+  renderReview(r);
+  renderPlan(r);
+  renderVol(r);
+}
+
+/* ---------------- 事件 ---------------- */
+function bindTop(){
+  var sc = $("scene"), gr = $("grade"), gd = $("gender"), df = $("diff");
+  sc.value = state.scene; gr.value = state.grade; gd.value = state.gender; df.value = state.diffAdj;
+  df.oninput = function(){
+    state.diffAdj = parseFloat(df.value) || 0;
+    renderAll(); save();
+  };
+  sc.onchange = function(){ state.scene = sc.value; renderAll(); save(); };
+  gr.onchange = function(){
+    state.grade = gr.value;
+    if(gr.value !== "9") state.geoUnlock = false;
+    renderSubjects(); renderPE(); renderAll(); save();
+  };
+  gd.onchange = function(){
+    state.gender = gd.value;
+    // 性别变了，必考项目要跟着换
+    if(state.pe.bikao === "run1000" && gd.value === "f") state.pe.bikao = "run800";
+    if(state.pe.bikao === "run800" && gd.value === "m") state.pe.bikao = "run1000";
+    renderPE(); renderAll(); save();
+  };
+  updateSceneNote();
+}
+function updateSceneNote(){
+  var m = {
+    daily:"平时测验：生成「总评」和「提升计划」，重点看哪几科最值得补。",
+    mid:"期中/期末：生成「总评」和「提升计划」，按这次考试的失分结构排优先级。",
+    mock:"一模/二模：生成「总评」和「提升计划」，这时候的排名参考价值最高。",
+    zk:"正式中考：按真实录取口径出总分和 1/2/3 志愿，不再给「提升计划」。"
+  };
+  $("sceneNote").textContent = m[state.scene] || "";
+  $("sceneTip").textContent = "";
+}
+function ensureXuanPool(){
+  var pool = (ZK.pe2027[state.city] || []);
+  if(!pool.length) return;                       // 未公布，全部可选
+  var keep = (state.pe.xuan || []).filter(function(id){ return pool.indexOf(id) >= 0; });
+  pool.forEach(function(id){ if(keep.length < 2 && keep.indexOf(id) < 0) keep.push(id); });
+  state.pe.xuan = keep.slice(0,2);
+}
+function buildCities(){
+  var s = $("city");
+  s.innerHTML = ZK.cities.map(function(c){ return '<option value="'+c.id+'">'+c.name+'</option>'; }).join("");
+  s.value = state.city;
+  s.onchange = function(){
+    state.city = s.value;
+    state.area = ZK.cities.filter(function(c){return c.id===state.city;})[0].areas[0].id;
+    state.picks = [null,null,null];
+    ensureXuanPool();
+    buildAreas(); renderPE(); renderAll(); save();
+  };
+}
+function buildAreas(){
+  var c = cityObj(), s = $("area");
+  s.innerHTML = c.areas.map(function(a){ return '<option value="'+a.id+'">'+a.name+'</option>'; }).join("");
+  if(!c.areas.some(function(a){return a.id===state.area;})) state.area = c.areas[0].id;
+  s.value = state.area;
+  s.onchange = function(){ state.area = s.value; state.picks=[null,null,null]; renderAll(); save(); };
+  $("ruleTip").textContent = c.rule || "";
+}
+function bindButtons(){
+  $("libSearch").oninput = function(){ if(lastRec) renderLib(lastRec); };
+  $("btnCopy").onclick = function(){
+    var t = sheetText();
+    if(navigator.clipboard && navigator.clipboard.writeText)
+      navigator.clipboard.writeText(t).then(function(){ flash($("btnCopy"),"已复制"); }, function(){ fallbackCopy(t, $("btnCopy")); });
+    else fallbackCopy(t, $("btnCopy"));
+  };
+  $("btnCopyRV").onclick = function(){
+    var t = $("review").innerText + "\n\n" + $("plan").innerText;
+    if(navigator.clipboard && navigator.clipboard.writeText)
+      navigator.clipboard.writeText(t).then(function(){ flash($("btnCopyRV"),"已复制"); }, function(){ fallbackCopy(t, $("btnCopyRV")); });
+    else fallbackCopy(t, $("btnCopyRV"));
+  };
+  $("btnPrint").onclick = function(){
+    buildReport();
+    setTimeout(function(){ window.print(); }, 60);
+  };
+  $("btnReset").onclick = function(){
+    if(!confirm("清空所有成绩、体育和志愿选择？")) return;
+    state.scores = {}; state.geoUnlock = false;
+    state.pe = {bikao:state.gender==="m"?"run1000":"run800", choukao:"volley", xuan:["ball","rope"], val:{}};
+    state.picks = [null,null,null]; state.diffAdj = 0; state.base = "2026";
+    state.hasDX = false; state.driftY = 4; state.driftB = 6; state.dxDrop = 20;
+    state.myRank = 0; state.gradeN = 0; state.dxQuota = 0;
+    $("diff").value = 0;
+    renderSubjects(); renderPE(); renderAll(); save();
+  };
+  $("btnAdd").onclick = function(){
+    $("addName").value = ""; $("addLine").value = "";
+    $("modal").classList.add("on"); $("addName").focus();
+  };
+  $("addCancel").onclick = function(){ $("modal").classList.remove("on"); };
+  $("modal").onclick = function(e){ if(e.target === $("modal")) $("modal").classList.remove("on"); };
+  $("addOk").onclick = function(){
+    var n = ($("addName").value || "").trim();
+    var l = parseFloat($("addLine").value);
+    if(!n || !isFinite(l)){ alert("学校名称和分数线都要填。"); return; }
+    state.custom.push({city:state.city, area:state.area, name:n, line:l});
+    $("modal").classList.remove("on");
+    renderAll(); save();
+  };
+  $("baseSeg").querySelectorAll("button").forEach(function(b){
+    b.onclick = function(){ state.base = b.getAttribute("data-v"); renderAll(); save(); };
+  });
+  $("dxOn").onchange = function(){
+    state.hasDX = $("dxOn").checked;
+    if(state.hasDX && state.city !== "fuzhou"){
+      alert("定向生的降分规则各市不同（福州是统招线下 45 分内，泉州一级达标定向比例已到 70% 以上）。\n这个软件只在福州按 45 分区间估算；其他市请按本市细则，上面的线不作定向依据。");
+    }
+    renderAll(); save();
+  };
+  ["myRank","gradeN","dxQuota"].forEach(function(id){
+    $(id).oninput = function(){
+      state[id] = parseInt($(id).value, 10) || 0;
+      renderAll(); save();
+    };
+  });
+  $("driftY").oninput = function(){ state.driftY = parseFloat($("driftY").value); renderAll(); save(); };
+  $("driftB").oninput = function(){ state.driftB = parseFloat($("driftB").value); renderAll(); save(); };
+  $("dxDrop").oninput = function(){ state.dxDrop = parseFloat($("dxDrop").value); renderAll(); save(); };
+}
+function fallbackCopy(t, btn){
+  var ta = document.createElement("textarea");
+  ta.value = t; ta.style.position="fixed"; ta.style.opacity="0";
+  document.body.appendChild(ta); ta.select();
+  try{ document.execCommand("copy"); flash(btn,"已复制"); }catch(e){ alert(t); }
+  document.body.removeChild(ta);
+}
+function flash(btn, txt){
+  var old = btn.textContent;
+  btn.textContent = txt;
+  setTimeout(function(){ btn.textContent = old; }, 1400);
+}
+function sheetText(){
+  var r = calc(), rec = recommend(r);
+  var lines = ["福建中考志愿参考表（2026 线）",
+    "地区：" + cityObj().name + " · " + areaObj().name,
+    "本次折算：" + r.total.toFixed(1) + " / 800 ｜ 中考等效分：" + rec.s.toFixed(1) +
+      "（难度换算：" + (diffAdj()>0?"+":"") + diffAdj() + " 分）",
+    "分数线口径：" + (state.base === "2027" ? "2027 预测线" : "2026 实际线") +
+      (state.hasDX ? " ｜ 已按定向生（降 " + state.dxDrop + " 分）估算" : "")];
+  for(var i=0;i<3;i++) lines.push("第" + (i+1) + "志愿：" + (state.picks[i] || "（未选）"));
+  lines.push("注意：分数线为 2026 年实际录取线，仅作定位参考。");
+  return lines.join("\n");
+}
+
+/* ---------------- 成绩单（打印） ---------------- */
+function buildReport(){
+  var r = calc(), c = cityObj(), a = areaObj();
+  var eq = eqScore(r.total);
+  var rec = recommend(r);
+  var est = estRank(eq);
+  var gl = (c.gate && c.gate[state.area]) ? c.gate[state.area] : [];
+  var d = new Date();
+  var ds = d.getFullYear()+"年"+(d.getMonth()+1)+"月"+d.getDate()+"日";
+  var sceneName = {daily:"平时测验 / 单元考", mid:"期中 · 期末", mock:"一模/二模", zk:"正式中考"}[state.scene] || "";
+  var baseName = state.base === "2027" ? "2027 预测线" : "2026 实际线";
+
+  function f1(v){ return v === null || v === undefined ? "—" : Number(v).toFixed(1); }
+
+  var h = "";
+  h += '<div class="rt"><h1>福建中考 · 成绩分析单</h1>'+
+       '<div class="rs">按 2026 年福建省中招规则折算 ｜ 总分 800 分 ｜ 体育 40 分</div></div>';
+
+  h += '<div class="meta">'+
+       '<span>姓名：<span class="fill"></span></span>'+
+       '<span>学校：<span class="fill"></span></span>'+
+       '<span>地区：<b>'+esc(c.name)+' · '+esc(a.name)+'</b></span>'+
+       '<span>考试：<b>'+esc(sceneName)+'</b></span>'+
+       '<span>年级：<b>'+state.grade+' 年级</b>　性别：<b>'+(state.gender==="m"?"男":"女")+'</b></span>'+
+       '<span>日期：<b>'+ds+'</b></span>'+
+       '</div>';
+
+  // 一、文化课
+  h += '<h2>一、文化课折算成绩</h2><table><thead><tr>'+
+       '<th style="width:26%">科目</th><th style="width:20%">卷面分</th>'+
+       '<th style="width:22%">折算比例</th><th style="width:32%">计入总分</th></tr></thead><tbody>';
+  r.rows.forEach(function(x){
+    var ratio = (x.w === 1) ? "原始分" : (Math.round(x.w*100)+"%");
+    var tag = (state.grade === "9" && (x.k === "地理" || x.k === "生物")) ? "（小中考）" : "";
+    h += '<tr><td class="l">'+x.k+tag+'</td><td>'+f1(x.raw)+' / '+x.max+'</td>'+
+         '<td>'+ratio+'</td><td><b>'+f1(x.got)+'</b></td></tr>';
+  });
+  h += '<tr class="sum"><td class="l">文化课合计</td><td>—</td><td>—</td><td>'+r.culture.toFixed(1)+'</td></tr>';
+  h += '</tbody></table>';
+
+  // 二、体育
+  h += '<h2>二、体育与健康（40 分）</h2><table><thead><tr>'+
+       '<th style="width:38%">项目</th><th style="width:22%">实测成绩</th>'+
+       '<th style="width:20%">百分制</th><th style="width:20%">计入</th></tr></thead><tbody>';
+  if(r.peItems.length){
+    r.peItems.forEach(function(it){
+      h += '<tr><td class="l">'+projName(it.id, state.gender)+'</td>'+
+           '<td>'+(it.raw === null ? "—" : fmtPerf(it.id, it.raw))+'</td>'+
+           '<td>'+(it.pct === null ? "—" : it.pct)+'</td>'+
+           '<td><b>'+(it.conv === null ? "—" : it.conv)+'</b></td></tr>';
+    });
+  }else{
+    h += '<tr><td colspan="4">未选择体育项目</td></tr>';
+  }
+  h += '<tr class="sum"><td class="l">体育合计</td><td>—</td><td>—</td><td>'+r.pe+'</td></tr>';
+  h += '</tbody></table>';
+
+  // 三、合计与定位
+  h += '<h2>三、合计与定位</h2>';
+  h += '<table><tbody>';
+  h += '<tr class="sum"><td class="l" style="width:40%">投档总分</td>'+
+       '<td class="big" colspan="3">'+r.total.toFixed(1)+' / 800　（得分率 '+(r.total/800*100).toFixed(1)+'%）</td></tr>';
+  h += '<tr><td class="l">文化课 / 体育</td><td colspan="3">'+r.culture.toFixed(1)+' ／ '+r.pe+'</td></tr>';
+  if(Math.abs(eq - r.total) >= 0.05){
+    h += '<tr><td class="l">中考等效分</td><td colspan="3">'+eq.toFixed(1)+
+         '（卷子难度换算 '+(diffAdj()>0?"+":"")+diffAdj()+' 分）</td></tr>';
+  }
+  if(est){
+    h += '<tr><td class="l">预估全市排名</td><td colspan="3">约第 '+est.rank+' 名（前 '+
+         (est.pct*100).toFixed(1)+'%），全市考生约 '+est.n+' 人<br>'+
+         '<span style="font-size:9pt;color:#555">依据：'+esc(est.note)+'；插值估算，中间分段误差可能上千名</span></td></tr>';
+  }
+  h += '</tbody></table>';
+
+  if(gl.length){
+    h += '<table style="margin-top:8px"><thead><tr><th class="l" style="width:52%">投档控制线</th>'+
+         '<th style="width:20%">分数</th><th style="width:28%">与等效分比较</th></tr></thead><tbody>';
+    gl.forEach(function(g){
+      var gv = gateVal(g.v), dd = eq - gv;
+      h += '<tr><td class="l">'+esc(g.name)+'</td><td>'+gv+'</td><td>'+
+           (dd>=0 ? "高 "+dd.toFixed(1) : "差 "+Math.abs(dd).toFixed(1))+'</td></tr>';
+    });
+    h += '</tbody></table>';
+  }
+
+  // 四、志愿
+  h += '<h2>四、1 / 2 / 3 志愿建议</h2>';
+  h += '<table><thead><tr><th style="width:12%">志愿</th><th style="width:40%">学校</th>'+
+       '<th style="width:16%">参考线</th><th style="width:14%">线差</th><th style="width:18%">判断</th></tr></thead><tbody>';
+  var all = allSchools();
+  for(var i=0;i<3;i++){
+    var nm = state.picks[i], sch = null;
+    if(nm){ for(var j=0;j<all.length;j++) if(all[j].name === nm){ sch = all[j]; break; } }
+    if(!sch){
+      h += '<tr><td>'+(i+1)+'</td><td class="l">未选择</td><td>—</td><td>—</td><td>—</td></tr>';
+    }else{
+      var ln = recLine(sch), dxl = (state.hasDX && isDXSchool(sch.name)) ? round1(ln - state.dxDrop) : null;
+      var eff = dxl !== null ? Math.min(ln, dxl) : ln;
+      var dd2 = eq - eff;
+      var tag = dd2 < 0 ? "需超常" : (dd2 < 20 ? "较稳" : "保底");
+      if(dxl !== null && eq < ln && eq >= dxl) tag = dxTagText();
+      h += '<tr><td>'+(i+1)+'</td><td class="l">'+esc(sch.name)+'</td>'+
+           '<td>'+eff+(dxl!==null?('<br><span style="font-size:8.5pt">定向 '+dxl+'</span>'):'')+'</td>'+
+           '<td>'+(dd2>=0?"+":"")+dd2.toFixed(1)+'</td><td>'+tag+'</td></tr>';
+    }
+  }
+  h += '</tbody></table>';
+
+  h += '<div class="foot">'+
+       '口径：分数线按「'+baseName+'」；'+(state.hasDX ? '已按定向生降 '+state.dxDrop+' 分估算。' : '未计入定向生。')+'<br>'+
+       '依据：折算规则见闽教基〔2018〕66 号及 2026 年各设区市中招文件；体育评分标准见闽教体〔2020〕18 号；'+
+       '学校录取线为 2026 年实际公布数据。<br>'+
+       '本单为个人成绩分析参考，不构成录取依据，正式投档以教育部门当年公布为准。'+
+       '</div>';
+
+  h += '<div class="sign"><span>考生签字</span><span>家长签字</span><span>'+ds+'</span></div>';
+
+  $("reportSheet").innerHTML = h;
+}
+
+/* ---------------- 启动 ---------------- */
+load();
+buildCities();
+ensureXuanPool();
+buildAreas();
+bindTop();
+renderSubjects();
+renderPE();
+renderAll();
+bindButtons();
+})();
+</script>
+</body>
+</html>
